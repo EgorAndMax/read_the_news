@@ -19,15 +19,6 @@ namespace ReadTheNews.Models
 {
     public class Report
     {
-        private List<RssItem> GetFavoriteNews(RssNewsContext db, string user_id, DateTime start, DateTime finish)
-        {
-            var news = (from rss in db.RssItems
-                        where rss.Date >= start && rss.Date <= finish
-                        select rss).ToList(); ;
-
-            return news;
-        }
-
         //Формирование pdf-файла с краткими описаниями и иллюстрациями новостей за заданный период времени
         public void CreatePdf(string path, DateTime start, DateTime finish, RssNewsContext db, string user_id)
         {
@@ -184,8 +175,8 @@ namespace ReadTheNews.Models
             int i = 2;
             foreach(var item in query)
             {
-                xlappwsh.Cells[i, 1] = item.Count;
-                xlappwsh.Cells[i, 2] = item.Name;
+                xlappwsh.Cells[i, 1] = item.Name;
+                xlappwsh.Cells[i, 2] = item.Count;
                 i += 1;
             }
             
@@ -195,8 +186,8 @@ namespace ReadTheNews.Models
             Excel.ChartObject myChart = (Excel.ChartObject)xlCharts.Add(150, 10, 510, 293);
             Excel.Chart chartPage = myChart.Chart;
             chartRange = xlappwsh.get_Range("A1", "B" + query.Count);
-            chartPage.ChartType = Excel.XlChartType.xlSurfaceTopView;
-            chartPage.Legend.Clear();
+            chartPage.ChartType = Excel.XlChartType.xlColumnStacked;
+            //chartPage.Legend.Clear();
             object misValue = Missing.Value;
             chartPage.SetSourceData(chartRange, misValue);
             path = @"E:\Projects\read_the_news\ReadTheNews\Content\Images\graph.bmp";
@@ -204,6 +195,16 @@ namespace ReadTheNews.Models
             xlappwb.Save();
             xlappwb.Close(true, Type.Missing, false);
             xlapp.Quit();
+        }
+
+
+        private List<RssItem> GetFavoriteNews(RssNewsContext db, string user_id, DateTime start, DateTime finish)
+        {
+            var news = (from rss in db.RssItems
+                        where rss.Date >= start && rss.Date <= finish
+                        select rss).ToList(); ;
+
+            return news;
         }
 
         private List<CountNewsOfCategory> GetCountNewsOfCategory(RssNewsContext db, string user_id)
