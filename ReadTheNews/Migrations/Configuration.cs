@@ -4,6 +4,7 @@ namespace ReadTheNews.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using ReadTheNews.Models;
 
     internal sealed class Configuration : DbMigrationsConfiguration<ReadTheNews.Models.RssNewsContext>
     {
@@ -27,6 +28,21 @@ namespace ReadTheNews.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+            context.RssCategories.AddOrUpdate(
+                p => p.Name,
+                new RssCategory { Name = "Sport" }
+               );
+            RssItem item = new RssItem { Title = "Херня", Description = "fsd", Link = "fewkfew", Date = DateTime.Now, IsLastNews = false, ImageSrc = "no" };
+            context.RssItems.AddOrUpdate(
+                item
+                );
+            context.DeletedNews.AddOrUpdate(
+                new DeletedRssItemsByUser { RssItemId = 1, UserId = "fsdfdsfds" });
+
+            context.DefferedNews.AddOrUpdate(
+                new UserDefferedNews { RssItemId = 1, UserId = "fsdfdsfds" });
+            context.FavoriteNews.AddOrUpdate(
+                new FavoriteNews { RssItemId = 1, UserId = "ffff"});
         }
     }
 }
